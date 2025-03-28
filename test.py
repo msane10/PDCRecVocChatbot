@@ -80,17 +80,17 @@ def main():
                 st.session_state.messages.append(f"user: {speech_text}")
                 response = chatbot_response(speech_text)
                 st.session_state.messages.append(f"assistant: {response}")
-                st.rerun()
+                st.experimental_rerun()
 
     if st.button("📩 Envoyer") and user_input:
         st.session_state.messages.append(f"user: {user_input}")
         response = chatbot_response(user_input)
         st.session_state.messages.append(f"assistant: {response}")
-        st.rerun()
+        st.experimental_rerun()
 
     if st.button("🔄 Réinitialiser la conversation"):
-        st.session_state.messages = []
-        st.rerun()
+        del st.session_state["messages"]
+        st.experimental_rerun()
 
 if __name__ == "__main__":
     main()
