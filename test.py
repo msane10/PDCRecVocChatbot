@@ -38,9 +38,9 @@ def transcribe_speech():
     r = sr.Recognizer()
     with sr.Microphone() as source:
         st.write("🎤 Parlez maintenant...")
-        r.adjust_for_ambient_noise(source, duration=1)
+        r.adjust_for_ambient_noise(source, duration=1)  # Réduction du bruit ambiant
         try:
-            audio = r.listen(source, timeout=10, phrase_time_limit=10)
+            audio = r.listen(source, timeout=10, phrase_time_limit=10)  # Augmentation du temps d'écoute
             text = r.recognize_google(audio, language="fr-FR")
             return text
         except sr.UnknownValueError:
@@ -62,11 +62,9 @@ def main():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Afficher l'historique des messages avec st.chat_message
-    for msg in st.session_state.messages:
-        role, text = msg.split(":", 1)
-        with st.chat_message(role.strip()):
-            st.write(text.strip())
+    # Afficher l'historique des messages
+    for message in st.session_state.messages:
+        st.write(message)
 
     col1, col2 = st.columns([3, 1])
 
@@ -77,20 +75,17 @@ def main():
         if st.button("🎙️ Parler"):
             speech_text = transcribe_speech()
             if speech_text:
-                st.session_state.messages.append(f"user: {speech_text}")
+                st.text_area("🗣️ Texte reconnu :", speech_text, height=70, disabled=True)
                 response = chatbot_response(speech_text)
-                st.session_state.messages.append(f"assistant: {response}")
-                st.experimental_rerun()
+                st.session_state.messages.append(f"🗣️ Vous: {speech_text}")
+                st.session_state.messages.append(f"🤖 ChatBot: {response}")
+                st.success(f"🤖 ChatBot: {response}")
 
     if st.button("📩 Envoyer") and user_input:
-        st.session_state.messages.append(f"user: {user_input}")
         response = chatbot_response(user_input)
-        st.session_state.messages.append(f"assistant: {response}")
-        st.experimental_rerun()
-
-    if st.button("🔄 Réinitialiser la conversation"):
-        del st.session_state["messages"]
-        st.experimental_rerun()
+        st.session_state.messages.append(f"💬 Vous: {user_input}")
+        st.session_state.messages.append(f"🤖 ChatBot: {response}")
+        st.success(f"🤖 ChatBot: {response}")
 
 if __name__ == "__main__":
     main()
